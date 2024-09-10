@@ -21,4 +21,3 @@ async function query(req, params) {
 }
 
 module.exports = query;
-module.exports = pool;

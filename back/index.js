@@ -1,13 +1,21 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const query = require("./db.js");
+const argon2 = require('argon2');
+const inscriptionRouter = require('../front/inscription/inscription.js');
 
+try {
+  const hash = await argon2.hash("password");
+} catch (err) {
+  //...
+}
 
 const router = express();
 const port = 8080;
 
 // middleware bodyparser
 router.use(bodyParser.json());
+router.use('/users', inscriptionRouter);
 
 router.get("/", (req, res) => {
   res.send("Hello world");
