@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    secrets:
+      - db_password
+  postgres_dev:
+    image: postgres:16.4-bookworm
+    restart: always
+    env_file:
+      - .secrets
+    ports:
+      - "5441:5432"
+    volumes:
+      - postgresql:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U postgres
+      interval: 1s
+volumes:
+  postgresql:
+secrets:
+  db_password:
+    file: .secrets
