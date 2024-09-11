@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const query = require("./db.js");
+const argon2 = require('argon2');
 
 // create a new user
 router.post("/", async (req, res) => {
@@ -36,7 +37,8 @@ router.post("/", async (req, res) => {
             res.status(201).send(user);
           }
       } catch (err) {
-        //...
+        console.error('Error during registration:', error);
+            return res.status(500).send('An error occurred during registration. Please try again later.');
       }
     }
   });

@@ -45,36 +45,7 @@ router.get("/users/:id", async (req, res) => {
     }
   }
 });
-// create a new user
-router.post("/users", async (req, res) => {
-  const username = req.body.username;
-  const email = req.body.email;
-  const password = req.body.password;
-  if (!username && !email && !password) {
-    res.status(400).send("Aucune donnée fourni");
-  } else if (!username) {
-    res.status(400).send("Aucun nom d'utilisateur fourni");
-  } else if (!email) {
-    res.status(400).send("Aucun email fourni");
-  } else if (!password) {
-    res.status(400).send("Aucun mot de passe fourni");
-  } else {
-    const result = await query(
-      "SELECT * FROM users WHERE username = $1 AND email = $2 AND password = $3",
-      [username, email, password]
-    );
-    if (result.rowCount === 1) {
-      res.status(409).send("L'utilisateur existe déjà.");
-    } else {
-      const result2 = await query(
-        "INSERT INTO users(username, email, password) VALUES ($1, $2, $3)",
-        [username, email,  password]
-      );
-      const user = result2.rows[0];
-      res.status(201).send(user);
-    }
-  }
-});
+
 // update an user
 router.put("/users/:id", async (req, res) => {
   const id = parseInt(req.params.id);
@@ -120,7 +91,7 @@ router.delete("/users/:id", async (req, res) => {
 router.get("/posts", async (req, res) => {
   const result = await query("SELECT * FROM posts");
   if (result.rowCount === 0) {
-    res.send("Ancun article trouvé");
+    res.status(404).send("Ancun article trouvé");
   } else {
     res.send(result.rows);
   }
