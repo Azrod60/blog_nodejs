@@ -55,7 +55,7 @@ router.put("/users/:id", async (req, res) => {
   const result = await query("SELECT * FROM users WHERE id = $1", [id]);
   if (result.rowCount === 0) {
     res.status(404).send(`Aucun utilisateur existant sur l'id: ${id}`);
-  } else if (!username && !email) {
+  } else if (!username && !email && !password) {
     res.status(400).send("Aucun body fourni");
   } else if (!username) {
     res.status(400).send("Aucun nom d'utilisateur fourni");
@@ -63,6 +63,8 @@ router.put("/users/:id", async (req, res) => {
     res.status(400).send("Aucun email fourni");
   } else if (!password) {
     res.status(400).send("Aucun mot de passe fourni");
+  } else if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/.test(password)) {
+    return res.status(400).send("Mot de passe au mauvais format")
   } else {
     const result2 = await query(
       "UPDATE users SET username = $1, email = $2, password = $3 WHERE id = $4 ",
