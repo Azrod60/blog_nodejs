@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog</title>
+  </head>
+  <body>
+    <h1>Liste des Articles</h1>
+    <div id="posts"></div>
+
+    <h2>Créer un nouvel article</h2>
+    <form id="postForm">
+      <input type="text" id="title" placeholder="Titre" required />
+      <textarea id="body" placeholder="Contenu" required></textarea>
+      <input
+        type="text"
+        id="image"
+        placeholder="URL de l'image"
+        required
+      />
+      <button type="submit">Créer</button>
+    </form>
+
+    <script src="blog.js"></script>
+    <script>
+      document
+        .getElementById("postForm")
+        .addEventListener("submit", createPost);
+      fetchPosts(); // Récupère et affiche tous les posts dès le chargement de la page
+    </script>
+  </body>
+</html>
