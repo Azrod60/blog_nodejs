@@ -24,9 +24,7 @@
 
     <script src="blog.js"></script>
     <script>
-      document
-        .getElementById("postForm")
-        .addEventListener("submit", createPost);
+      document.getElementById("postForm").addEventListener("submit", createPost());
       fetchPosts(); // Récupère et affiche tous les posts dès le chargement de la page
     </script>
   </body>

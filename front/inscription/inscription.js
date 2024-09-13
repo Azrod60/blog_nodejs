@@ -1,46 +1,81 @@
 const router = require("express").Router();
 const query = require("./db.js");
-const argon2 = require('argon2');
+const argon2 = require("argon2");
 
-// create a new user
+// Créer un nouvel utilisateur
 router.post("/", async (req, res) => {
-    const username = req.body.username;
-    const email = req.body.email;
-    const password = req.body.password;
-    if (!username && !email && !password) {
-      return res.status(400).send("Aucune donnée fourni");
-    } else if (!username) {
-      return res.status(400).send("Aucun nom d'utilisateur fourni");
-    } else if (!email) {
-      return res.status(400).send("Aucun email fourni");
-    } else if (!password) {
-      return res.status(400).send("Aucun mot de passe fourni");
-    } else if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/.test(password)) {
-      return res.status(400).send("Mot de passe au mauvais format")
-    } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-      return res.status(400).send("Email au mauvais format")
-    } else {
-      try {
-        const result = await query(
-            "SELECT * FROM users WHERE email = $1",
-            [email]
-          );
-          if (result.rowCount === 1) {
-            res.status(409).send("L'utilisateur existe déjà.");
-          } else {
-            const hash = await argon2.hash("password");
-            const result2 = await query(
-              "INSERT INTO users(email, password) VALUES ($1, $2)",
-              [email, hash]
-            );
-            const user = result2.rows[0];
-            res.status(201).send(user);
-          }
-      } catch (err) {
-        console.error('Error during registration:', error);
-            return res.status(500).send('An error occurred during registration. Please try again later.');
-      }
-    }
-  });
+    const { username, email, password } = req.body;
 
-  module.exports = router;
+    // Vérifications des données d'entrée
+    if (!username) {
+        return res.status(400).json({ message: "Le nom d'utilisateur est requis." });
+    }
+    if (!email) {
+        return res.status(400).json({ message: "L'email est requis." });
+    }
+    if (!password) {
+        return res.status(400).json({ message: "Le mot de passe est requis." });
+    }
+    if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)) {
+        return res.status(400).json({ message: "Le mot de passe doit contenir au moins 8 caractères, avec une majuscule, une minuscule et un chiffre." });
+    }
+    if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+        return res.status(400).json({ message: "Le format de l'email est invalide." });
+    }
+
+    try {
+        // Vérifier si l'email existe déjà
+        const userCheck = await query("SELECT * FROM users WHERE email = $1", [email]);
+
+        if (userCheck.rowCount > 0) {
+            return res.status(409).json({ message: "L'utilisateur avec cet email existe déjà." });
+        }
+
+        // Hash du mot de passe
+        const hash = await argon2.hash(password);
+
+        // Insertion du nouvel utilisateur
+        const result = await query(
+            "INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id, username, email",
+            [username, email, hash]
+        );
+
+        // Retourner l'utilisateur créé
+        const newUser = result.rows[0];
+        return res.status(201).json({ message: "Utilisateur créé avec succès.", user: newUser });
+    } catch (error) {
+        console.error("Erreur lors de l'inscription :", error);
+        return res.status(500).json({ message: "Une erreur est survenue lors de l'inscription. Veuillez réessayer plus tard." });
+    }
+});
+
+async function signup(e) {
+  e.preventDefault();
+
+  const username = document.getElementById("username").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  try {
+      const response = await fetch("/", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+          document.getElementById("responseMessage").textContent = data.message;
+      } else {
+          document.getElementById("responseMessage").textContent = data.message || "Erreur lors de l'inscription.";
+      }
+  } catch (error) {
+      console.error("Erreur lors de l'inscription :", error);
+      document.getElementById("responseMessage").textContent = "Une erreur est survenue lors de l'inscription.";
+  }
+};
+
+module.exports = router;

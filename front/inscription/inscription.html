@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription au Blog</title>
+</head>
+<body>
+    <h1>Inscription</h1>
+    <form id="signup">
+        <input type="text" id="username" placeholder="Nom d'utilisateur" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Mot de passe" required>
+        <button type="submit">S'inscrire</button>
+    </form>
+
+    <p id="responseMessage"></p>
+
+    <script>
+        // Gestion du formulaire d'inscription
+        document.getElementById("signup").addEventListener("submit", signup())
+    </script>
+</body>
+</html>
