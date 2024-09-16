@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const query = require("./db.js");
+const query = require("../back/db.js");
 const session = require("express-session");
 const argon2 = require("argon2");
 const path = require("path");

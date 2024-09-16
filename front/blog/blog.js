@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const query = require("./db.js");
+const query = require("../back/db.js");
 
 // Récupérer tous les posts
 router.get("/posts", async (req, res) => {

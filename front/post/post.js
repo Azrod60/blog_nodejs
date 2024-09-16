@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const query = require("./db.js");
+const query = require("../back/db.js");
 
 // Get a specific post by ID
 router.get("/posts/:id", async (req, res) => {

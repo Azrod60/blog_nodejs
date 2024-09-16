@@ -6,9 +6,9 @@ const inscriptionRouter = require('../front/inscription/inscription.js');
 const router = express();
 const PORT = process.env.PORT || 8080;
 
-// middleware bodyparser
-router.use(bodyParser.json());
-router.use('/users', inscriptionRouter);
+// // middleware bodyparser
+// router.use(bodyParser.json());
+// router.use('/users', inscriptionRouter);
 
 router.get("/", (req, res) => {
   res.send("Hello world");
